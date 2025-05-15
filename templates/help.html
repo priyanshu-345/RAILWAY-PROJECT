@@ -1,0 +1,288 @@
+{% extends "base.html" %}
+
+{% block title %}Help - Indian Railways{% endblock %}
+
+{% block content %}
+<div class="text-center mb-4">
+    <h1 class="section-title">Help & Support</h1>
+    <p class="text-muted">Find answers to common questions and get support</p>
+</div>
+
+<div class="help-section">
+    <div class="card">
+        <h2 class="card-title">Frequently Asked Questions</h2>
+
+        <div class="accordion">
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span class="question-text">How do I book a train ticket?</span>
+                    <span class="question-icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    <p>To book a train ticket, click on the "Book Ticket" link in the navigation menu. Fill
+                        in your journey details including source station, destination station, train number, and date of travel.
+                        Follow the prompts to complete your booking.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span class="question-text">How can I check train schedules?</span>
+                    <span class="question-icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    <p>Click on the "Train Schedule" link in the navigation menu. Enter the train number you
+                        want to check, and the system will display the complete schedule including arrival and departure times
+                        at each station.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span class="question-text">What are the different classes of travel?</span>
+                    <span class="question-icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    <p>Indian Railways offers various classes of travel including:</p>
+                    <ul class="class-list">
+                        <li><strong>1A (First Class AC)</strong> - Most luxurious with private cabins</li>
+                        <li><strong>2A (Second Class AC)</strong> - Comfortable berths in an air-conditioned coach</li>
+                        <li><strong>3A (Third Class AC)</strong> - Air-conditioned coach with berths</li>
+                        <li><strong>SL (Sleeper Class)</strong> - Non-AC coach with berths</li>
+                        <li><strong>CC (AC Chair Car)</strong> - Air-conditioned seating</li>
+                        <li><strong>EC (Executive Class)</strong> - Premium seating with extra legroom</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span class="question-text">What is a PNR number?</span>
+                    <span class="question-icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    <p>PNR (Passenger Name Record) is a unique 10-digit number assigned to your booking. It
+                        is used to track your reservation status and is required for any modifications or cancellations.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mt-4">
+        <h2 class="card-title">Contact Support</h2>
+        
+        <div class="contact-grid">
+            <div class="contact-card">
+                <div class="contact-icon">📧</div>
+                <h3>Email</h3>
+                <p>support@indianrailways.gov.in</p>
+                <a href="mailto:support@indianrailways.gov.in" class="contact-link">Send Email</a>
+            </div>
+            
+            <div class="contact-card">
+                <div class="contact-icon">📞</div>
+                <h3>Phone</h3>
+                <p>1800-111-139</p>
+                <a href="tel:1800111139" class="contact-link">Call Now</a>
+            </div>
+            
+            <div class="contact-card">
+                <div class="contact-icon">🕒</div>
+                <h3>Hours</h3>
+                <p>24/7 Support</p>
+                <span class="badge">Always Available</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .text-muted {
+        color: var(--text-color);
+        opacity: 0.7;
+    }
+
+    .help-section {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .accordion {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .faq-item {
+        margin-bottom: 1rem;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-color);
+        transition: var(--transition);
+    }
+    
+    .faq-item:hover {
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    }
+
+    .faq-question {
+        background-color: rgba(74, 107, 255, 0.03);
+        padding: 1rem 1.5rem;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 500;
+    }
+    
+    .question-text {
+        color: var(--primary-color);
+        font-size: 1.1rem;
+    }
+    
+    .question-icon {
+        color: var(--primary-color);
+        font-size: 1.2rem;
+        font-weight: 700;
+    }
+
+    .faq-answer {
+        padding: 0 1.5rem;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease, padding 0.3s ease;
+    }
+    
+    .faq-item.active .faq-answer {
+        padding: 1.5rem;
+        max-height: 500px;
+    }
+    
+    .faq-item.active .question-icon {
+        transform: rotate(45deg);
+    }
+
+    .class-list {
+        margin-top: 0.5rem;
+        margin-left: 1.5rem;
+    }
+
+    .class-list li {
+        margin-bottom: 0.5rem;
+        position: relative;
+        padding-left: 0.5rem;
+    }
+    
+    .class-list li strong {
+        color: var(--primary-color);
+    }
+    
+    .contact-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+    
+    .contact-card {
+        background-color: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        text-align: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-color);
+        transition: var(--transition);
+    }
+    
+    .contact-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    }
+    
+    .contact-icon {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+    
+    .contact-card h3 {
+        font-size: 1.1rem;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+    }
+    
+    .contact-card p {
+        margin-bottom: 1rem;
+        color: var(--text-color);
+    }
+    
+    .contact-link {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 500;
+        position: relative;
+        padding-bottom: 2px;
+    }
+    
+    .contact-link::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background-color: var(--primary-color);
+        transition: var(--transition);
+    }
+    
+    .contact-link:hover::after {
+        width: 100%;
+    }
+    
+    .badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        background-color: rgba(46, 204, 113, 0.15);
+        color: var(--success-color);
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
+        .help-section {
+            padding: 0 1rem;
+        }
+        
+        .contact-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const faqItems = document.querySelectorAll('.faq-item');
+        
+        faqItems.forEach(item => {
+            const question = item.querySelector('.faq-question');
+            
+            question.addEventListener('click', () => {
+                // Close all other items
+                faqItems.forEach(otherItem => {
+                    if (otherItem !== item && otherItem.classList.contains('active')) {
+                        otherItem.classList.remove('active');
+                    }
+                });
+                
+                // Toggle current item
+                item.classList.toggle('active');
+            });
+        });
+        
+        // Open the first FAQ item by default
+        if (faqItems.length > 0) {
+            faqItems[0].classList.add('active');
+        }
+    });
+</script>
+{% endblock %}

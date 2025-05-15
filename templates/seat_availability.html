@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+
+{% block title %}Seat Availability - Indian Railways{% endblock %}
+
+{% block content %}
+<div class="text-center">
+    <h1 class="section-title">Seat Availability</h1>
+    <p class="mb-4">{{ train.number }} - {{ train.name }}</p>
+</div>
+
+<div class="card">
+    <div class="journey-details">
+        <div class="detail-row">
+            <div class="detail-label">From</div>
+            <div class="detail-value">{{ from_station.name }} ({{ from_station.code }})</div>
+        </div>
+        <div class="detail-row">
+            <div class="detail-label">To</div>
+            <div class="detail-value">{{ to_station.name }} ({{ to_station.code }})</div>
+        </div>
+        <div class="detail-row">
+            <div class="detail-label">Date</div>
+            <div class="detail-value">{{ date }}</div>
+        </div>
+    </div>
+
+    <div class="availability-section">
+        <h3 class="section-subtitle">Available Seats</h3>
+        <div class="class-grid">
+            {% for class, seats in available_seats.items() %}
+            <div class="class-card {% if seats > 0 %}available{% else %}not-available{% endif %}">
+                <div class="class-name">{{ class }}</div>
+                <div class="seats-count">{{ seats }}</div>
+                <div class="availability-status">
+                    {% if seats > 0 %}
+                    Available
+                    {% else %}
+                    Not Available
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% set has_available_seats = false %}
+    {% for class_type, seats in available_seats.items() %}
+        {% if seats > 0 %}
+            {% set has_available_seats = true %}
+        {% endif %}
+    {% endfor %}
+    
+    {% if has_available_seats %}
+    <div class="booking-form">
+        <h3 class="section-subtitle">Passenger Details</h3>
+        <form method="POST" action="{{ url_for('direct_book') }}">
+            <input type="hidden" name="train_number" value="{{ train.number }}">
+            <input type="hidden" name="from_station" value="{{ from_station.code }}">
+            <input type="hidden" name="to_station" value="{{ to_station.code }}">
+            <input type="hidden" name="travel_date" value="{{ date }}">
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="passenger_name">Passenger Name</label>
+                    <input type="text" id="passenger_name" name="passenger_name" required class="form-control"
+                        placeholder="Enter passenger name">
+                </div>
+
+                <div class="form-group">
+                    <label for="passenger_age">Age</label>
+                    <input type="number" id="passenger_age" name="passenger_age" required class="form-control" min="1"
+                        max="120" placeholder="Enter age">
+                </div>
+
+                <div class="form-group">
+                    <label for="passenger_gender">Gender</label>
+                    <select id="passenger_gender" name="passenger_gender" required class="form-control">
+                        <option value="">Select gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="train_class">Class</label>
+                    <select id="train_class" name="train_class" required class="form-control">
+                        <option value="">Select class</option>
+                        {% for class, seats in available_seats.items() %}
+                        {% if seats > 0 %}
+                        <option value="{{ class }}">{{ class }}</option>
+                        {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="seats">Number of Seats</label>
+                    <input type="number" id="seats" name="seats" required class="form-control" min="1" max="6"
+                        value="1">
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-block">Book & Get PDF</button>
+        </form>
+    </div>
+    {% else %}
+    <div class="text-center mt-4">
+        <p>No seats available for the selected class and date.</p>
+        <a href="{{ url_for('ticket_booking') }}" class="btn btn-secondary mt-3">Try Different Date</a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .journey-details {
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .detail-row {
+        display: flex;
+        margin-bottom: 1rem;
+    }
+
+    .detail-row:last-child {
+        margin-bottom: 0;
+    }
+
+    .detail-label {
+        flex: 0 0 100px;
+        font-weight: 500;
+    }
+
+    .section-subtitle {
+        font-size: 1.25rem;
+        color: var(--primary-color);
+        margin: 1.5rem 0 1rem;
+    }
+
+    .class-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .class-card {
+        padding: 1rem;
+        border-radius: 8px;
+        text-align: center;
+        background-color: var(--light-color);
+        transition: transform 0.2s;
+    }
+
+    .class-card:hover {
+        transform: translateY(-2px);
+    }
+
+    .class-card.available {
+        border: 2px solid var(--success-color);
+    }
+
+    .class-card.not-available {
+        border: 2px solid var(--error-color);
+        opacity: 0.7;
+    }
+
+    .class-name {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+
+    .seats-count {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .availability-status {
+        font-size: 0.875rem;
+        color: var(--text-color);
+    }
+
+    .booking-form {
+        padding: 1.5rem;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .detail-row {
+            flex-direction: column;
+        }
+
+        .detail-label {
+            margin-bottom: 0.25rem;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}

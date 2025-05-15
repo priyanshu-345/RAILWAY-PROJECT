@@ -1,0 +1,136 @@
+[
+  {
+    "number": "12951",
+    "name": "Rajdhani Express",
+    "source": "NDLS",
+    "source_code": "NDLS",
+    "destination": "BCT",
+    "destination_code": "BCT",
+    "days": [
+      "Mon",
+      "Wed",
+      "Fri"
+    ],
+    "classes": [
+      "1A",
+      "2A",
+      "3A"
+    ],
+    "speed": "130",
+    "stations": [
+      {
+        "code": "NDLS",
+        "arrival": "",
+        "departure": "16:25",
+        "day": 1,
+        "distance": 0,
+        "platform": "1"
+      },
+      {
+        "code": "BCT",
+        "arrival": "08:15",
+        "departure": "",
+        "day": 2,
+        "distance": 1384,
+        "platform": "3"
+      }
+    ],
+    "seats": {
+      "1A": 20,
+      "2A": 50,
+      "3A": 100
+    }
+  },
+  {
+    "number": "12953",
+    "name": "Duronto Express",
+    "source": "NDLS",
+    "source_code": "NDLS",
+    "destination": "HWH",
+    "destination_code": "HWH",
+    "days": [
+      "Tue",
+      "Thu",
+      "Sat"
+    ],
+    "classes": [
+      "1A",
+      "2A",
+      "3A",
+      "SL"
+    ],
+    "speed": "120",
+    "stations": [
+      {
+        "code": "NDLS",
+        "arrival": "",
+        "departure": "22:00",
+        "day": 1,
+        "distance": 0,
+        "platform": "5"
+      },
+      {
+        "code": "HWH",
+        "arrival": "10:30",
+        "departure": "",
+        "day": 2,
+        "distance": 1447,
+        "platform": "9"
+      }
+    ],
+    "seats": {
+      "1A": 15,
+      "2A": 40,
+      "3A": 80,
+      "SL": 150
+    }
+  },
+  {
+    "number": "12628",
+    "name": "Karnataka Express",
+    "source": "NDLS",
+    "source_code": "NDLS",
+    "destination": "SBC",
+    "destination_code": "SBC",
+    "days": [
+      "Sun",
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri",
+      "Sat"
+    ],
+    "classes": [
+      "1A",
+      "2A",
+      "3A",
+      "SL"
+    ],
+    "speed": "110",
+    "stations": [
+      {
+        "code": "NDLS",
+        "arrival": "",
+        "departure": "10:30",
+        "day": 1,
+        "distance": 0,
+        "platform": "2"
+      },
+      {
+        "code": "SBC",
+        "arrival": "06:40",
+        "departure": "",
+        "day": 2,
+        "distance": 2380,
+        "platform": "4"
+      }
+    ],
+    "seats": {
+      "1A": 18,
+      "2A": 46,
+      "3A": 96,
+      "SL": 280
+    }
+  }
+]

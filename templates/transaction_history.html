@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Transaction History - Indian Railways{% endblock %}
+
+{% block content %}
+<div class="text-center">
+    <h1 class="section-title">Transaction History</h1>
+    <p class="mb-4">Below is a list of all your ticket purchase transactions.</p>
+</div>
+
+<div class="card">
+    {% if bookings and bookings|length > 0 %}
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>PNR</th>
+                    <th>Train</th>
+                    <th>Journey</th>
+                    <th>Travel Date</th>
+                    <th>Amount Paid</th>
+                    <th>Payment Method</th>
+                    <th>Transaction ID</th>
+                    <th>Booking Date</th>
+                    <th>View Ticket</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in bookings %}
+                <tr>
+                    <td>{{ booking.pnr }}</td>
+                    <td>{{ booking.train_name }}<br><span style="font-size:0.9em; color:#888;">({{ booking.train_number }})</span></td>
+                    <td>{{ booking.from_station }} → {{ booking.to_station }}</td>
+                    <td>{{ booking.date }}</td>
+                    <td>₹ {{ booking.fare_amount }}</td>
+                    <td>{{ booking.payment_method|replace('_', ' ')|title }}</td>
+                    <td>{{ booking.transaction_id }}</td>
+                    <td>{{ booking.booking_date }}</td>
+                    <td><a href="{{ url_for('view_ticket', pnr=booking.pnr) }}" class="btn btn-secondary" style="padding:0.4em 1em; font-size:0.95em;">View</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center">
+        <p>No transactions found.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

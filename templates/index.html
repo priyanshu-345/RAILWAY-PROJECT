@@ -1,0 +1,497 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome - Indian Railways{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="hero-content">
+        <h1 class="hero-title">Welcome to Indian Railways</h1>
+        <p class="hero-subtitle">Your trusted partner for train travel across India</p>
+        <div class="hero-actions">
+            <a href="{{ url_for('train_schedule') }}" class="btn">Check Train Schedule</a>
+            <a href="{{ url_for('ticket_booking') }}" class="btn btn-secondary">Book Tickets</a>
+        </div>
+    </div>
+</div>
+
+{% if session.username %}
+<div class="welcome-card">
+    <div class="welcome-icon">👋</div>
+    <div class="welcome-content">
+        <h2>Welcome back, {{ session.username }}!</h2>
+        <p>Thank you for choosing Indian Railways for your travel needs.</p>
+    </div>
+</div>
+{% endif %}
+
+<div class="features-section">
+    <h2 class="section-title">Our Services</h2>
+    
+    <div class="card-grid">
+        <div class="feature-card">
+            <div class="feature-icon">🚆</div>
+            <h3 class="feature-title">Train Schedule</h3>
+            <p class="feature-description">View detailed train timings and routes across India. Plan your journey with real-time information.</p>
+            <a href="{{ url_for('train_schedule') }}" class="feature-link">View Schedule</a>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">🎫</div>
+            <h3 class="feature-title">Book Tickets</h3>
+            <p class="feature-description">Book your train tickets easily and securely. Choose from various classes and enjoy hassle-free travel.</p>
+            <a href="{{ url_for('ticket_booking') }}" class="feature-link">Book Now</a>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">🔍</div>
+            <h3 class="feature-title">Search Trains</h3>
+            <p class="feature-description">Search for trains between stations. Find direct connections for your journey.</p>
+            <a href="{{ url_for('search_trains') }}" class="feature-link">Search Now</a>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">📄</div>
+            <h3 class="feature-title">E-Tickets</h3>
+            <p class="feature-description">View and download PDF tickets for your bookings. Easy access to your reservation details anytime, anywhere.</p>
+            <a href="{{ url_for('my_bookings') }}" class="feature-link">My Bookings</a>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">ℹ️</div>
+            <h3 class="feature-title">Quick Guide</h3>
+            <div class="feature-description">
+                <div class="guide-sections">
+                    <div class="guide-section">
+                        <div class="guide-header" onclick="toggleSection('booking')">
+                            <span class="guide-icon">📅</span>
+                            <h4>Booking Guidelines</h4>
+                            <span class="toggle-icon">▼</span>
+                        </div>
+                        <div class="guide-content" id="booking">
+                            <ul class="guide-list">
+                                <li>Book tickets up to 120 days in advance</li>
+                                <li>Multiple payment options available</li>
+                                <li>Instant e-ticket confirmation</li>
+                                <li>Free cancellation within 24 hours</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="guide-section">
+                        <div class="guide-header" onclick="toggleSection('travel')">
+                            <span class="guide-icon">🎫</span>
+                            <h4>Travel Requirements</h4>
+                            <span class="toggle-icon">▼</span>
+                        </div>
+                        <div class="guide-content" id="travel">
+                            <ul class="guide-list">
+                                <li>Carry valid ID proof during travel</li>
+                                <li>Arrive 30 minutes before departure</li>
+                                <li>Keep e-ticket ready for inspection</li>
+                                <li>Follow COVID-19 guidelines</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="guide-section">
+                        <div class="guide-header" onclick="toggleSection('ticket')">
+                            <span class="guide-icon">📱</span>
+                            <h4>E-Ticket Management</h4>
+                            <span class="toggle-icon">▼</span>
+                        </div>
+                        <div class="guide-content" id="ticket">
+                            <ul class="guide-list">
+                                <li>Download e-ticket or save as PDF</li>
+                                <li>Check PNR status anytime</li>
+                                <li>Modify booking details online</li>
+                                <li>Print ticket at station kiosks</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="guide-section">
+                        <div class="guide-header" onclick="toggleSection('amenities')">
+                            <span class="guide-icon">🚂</span>
+                            <h4>Train Amenities</h4>
+                            <span class="toggle-icon">▼</span>
+                        </div>
+                        <div class="guide-content" id="amenities">
+                            <ul class="guide-list">
+                                <li>Clean and comfortable seating</li>
+                                <li>Food and beverage services</li>
+                                <li>WiFi on premium trains</li>
+                                <li>Luggage storage facilities</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if session.username %}
+<div class="card mt-4">
+    <h2>Transaction History</h2>
+    <p>View your recent ticket purchase transactions.</p>
+    <a href="{{ url_for('transaction_history') }}" class="btn">View Transaction History</a>
+</div>
+{% endif %}
+
+<style>
+    .hero-section {
+        background: linear-gradient(-45deg, var(--primary-dark), var(--primary-color), var(--secondary-color), var(--secondary-dark));
+        background-size: 400% 400%;
+        animation: gradient-animation 15s ease infinite;
+        border-radius: 16px;
+        padding: 4rem 2rem;
+        margin-bottom: 3rem;
+        text-align: center;
+        color: white;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+    
+    @keyframes gradient-animation {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('https://source.unsplash.com/1600x900/?train,railway') center/cover;
+        opacity: 0.15;
+        mix-blend-mode: overlay;
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 1;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .hero-title {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 1.2rem;
+        text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        letter-spacing: -0.5px;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.3rem;
+        margin-bottom: 2.5rem;
+        opacity: 0.95;
+        font-weight: 400;
+    }
+    
+    .hero-actions {
+        display: flex;
+        gap: 1.25rem;
+        justify-content: center;
+    }
+    
+    .welcome-card {
+        display: flex;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 16px;
+        padding: 1.8rem;
+        margin-bottom: 3rem;
+        box-shadow: 0 8px 32px rgba(123, 76, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-left: 4px solid var(--primary-color);
+        transition: transform 0.3s ease;
+    }
+    
+    .welcome-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .welcome-icon {
+        font-size: 2.5rem;
+        margin-right: 1.8rem;
+    }
+    
+    .welcome-content h2 {
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+        font-size: 1.6rem;
+        font-weight: 700;
+    }
+    
+    .welcome-content p {
+        color: var(--text-color);
+        opacity: 0.85;
+        font-size: 1.05rem;
+    }
+    
+    .features-section {
+        margin-bottom: 4rem;
+    }
+    
+    .section-title {
+        text-align: center;
+        margin-bottom: 3rem;
+        color: var(--primary-color);
+        font-size: 2rem;
+        font-weight: 700;
+        position: relative;
+        display: inline-block;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .section-title::after {
+        content: '';
+        position: absolute;
+        width: 60px;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-radius: 50px;
+    }
+
+    .card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2.5rem;
+    }
+
+    .feature-card {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 16px;
+        padding: 2.5rem;
+        text-align: center;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+        transition: all 0.4s ease;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        border-radius: 5px 5px 0 0;
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.4s ease;
+    }
+
+    .feature-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 35px rgba(123, 76, 255, 0.12);
+    }
+    
+    .feature-icon {
+        font-size: 3rem;
+        margin-bottom: 1.8rem;
+        background: -webkit-linear-gradient(var(--primary-color), var(--secondary-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: inline-block;
+    }
+
+    .feature-title {
+        color: var(--primary-color);
+        margin-bottom: 1.2rem;
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+
+    .feature-description {
+        color: var(--text-color);
+        opacity: 0.85;
+        margin-bottom: 1.8rem;
+        flex-grow: 1;
+        line-height: 1.7;
+    }
+    
+    .feature-link {
+        color: var(--primary-color);
+        font-weight: 600;
+        text-decoration: none;
+        padding: 0.5rem 1.5rem;
+        position: relative;
+        align-self: center;
+        transition: all 0.3s ease;
+        border: 2px solid var(--primary-color);
+        border-radius: 25px;
+    }
+    
+    .feature-link:hover {
+        color: white;
+        background-color: var(--primary-color);
+    }
+
+    @media (max-width: 768px) {
+        .card-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .hero-actions {
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        
+        .hero-title {
+            font-size: 2.2rem;
+        }
+        
+        .welcome-card {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .welcome-icon {
+            margin-right: 0;
+            margin-bottom: 1rem;
+        }
+    }
+
+    .guide-sections {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .guide-section {
+        background: rgba(255, 255, 255, 0.5);
+        border-radius: 8px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .guide-section:hover {
+        background: rgba(255, 255, 255, 0.8);
+        transform: translateX(5px);
+    }
+
+    .guide-header {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        cursor: pointer;
+        user-select: none;
+        background: linear-gradient(90deg, rgba(123, 76, 255, 0.1), transparent);
+    }
+
+    .guide-header h4 {
+        margin: 0;
+        flex-grow: 1;
+        color: var(--primary-color);
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .guide-icon {
+        font-size: 1.2rem;
+        margin-right: 1rem;
+    }
+
+    .toggle-icon {
+        transition: transform 0.3s ease;
+        color: var(--primary-color);
+        font-size: 0.8rem;
+    }
+
+    .guide-section.active .toggle-icon {
+        transform: rotate(180deg);
+    }
+
+    .guide-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-out;
+        padding: 0 1rem;
+    }
+
+    .guide-section.active .guide-content {
+        max-height: 200px;
+        padding: 1rem;
+    }
+
+    .guide-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .guide-list li {
+        margin-bottom: 0.8rem;
+        padding-left: 1.5rem;
+        position: relative;
+        color: var(--text-color);
+        opacity: 0.85;
+        line-height: 1.5;
+        font-size: 0.9rem;
+    }
+
+    .guide-list li::before {
+        content: '✓';
+        position: absolute;
+        left: 0;
+        color: var(--primary-color);
+        font-weight: bold;
+    }
+
+    .guide-list li:last-child {
+        margin-bottom: 0;
+    }
+
+    @media (max-width: 768px) {
+        .guide-header h4 {
+            font-size: 0.9rem;
+        }
+
+        .guide-list li {
+            font-size: 0.85rem;
+        }
+    }
+</style>
+
+<script>
+    function toggleSection(sectionId) {
+        const section = document.getElementById(sectionId);
+        const guideSection = section.parentElement;
+        const isActive = guideSection.classList.contains('active');
+        
+        // Close all sections
+        document.querySelectorAll('.guide-section').forEach(s => {
+            s.classList.remove('active');
+        });
+        
+        // Toggle clicked section
+        if (!isActive) {
+            guideSection.classList.add('active');
+        }
+    }
+</script>
+{% endblock %}

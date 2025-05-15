@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block title %}All Trains - Indian Railways{% endblock %}
+
+{% block content %}
+<div class="text-center mb-4">
+    <h1 class="section-title">All Available Trains</h1>
+    <p class="text-muted">Browse all trains in our network</p>
+</div>
+
+<div class="action-buttons text-center mb-4">
+    <a href="{{ url_for('search_trains') }}" class="btn">Search Specific Route</a>
+</div>
+
+<div class="card">
+    {% if trains %}
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Train</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Days</th>
+                    <th>Classes</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for train in trains %}
+                <tr>
+                    <td>
+                        <div class="train-cell">
+                            <div class="train-number">{{ train.number }}</div>
+                            <div class="train-name">{{ train.name }}</div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="station-cell">
+                            <div class="station-name">{{ train.source_name }}</div>
+                            <div class="station-code">{{ train.source }}</div>
+                            {% for station in train.stations %}
+                                {% if station.code == train.source_code %}
+                                <div class="station-time">Dep: {{ station.departure }}</div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="station-cell">
+                            <div class="station-name">{{ train.destination_name }}</div>
+                            <div class="station-code">{{ train.destination }}</div>
+                            {% for station in train.stations %}
+                                {% if station.code == train.destination_code %}
+                                <div class="station-time">Arr: {{ station.arrival }}</div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="days-cell">
+                            {% for day in train.days %}
+                            <span class="day-badge">{{ day }}</span>
+                            {% endfor %}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="classes-cell">
+                            {% for class in train.classes %}
+                            <span class="class-badge">{{ class }}</span>
+                            {% endfor %}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="actions-cell">
+                            <a href="{{ url_for('train_schedule', train_number=train.number) }}" class="btn btn-sm btn-secondary">Schedule</a>
+                            {% if session.username %}
+                            <a href="{{ url_for('ticket_booking') }}?train_number={{ train.number }}" class="btn btn-sm">Book</a>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center p-4">
+        <p>No trains available in the system.</p>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .action-buttons {
+        margin-bottom: 2rem;
+    }
+    
+    .train-cell {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .train-number {
+        font-weight: bold;
+        color: var(--primary-color);
+    }
+    
+    .train-name {
+        font-size: 0.9rem;
+    }
+    
+    .station-cell {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .station-name {
+        font-weight: 500;
+    }
+    
+    .station-code {
+        font-size: 0.8rem;
+        color: var(--text-color);
+        opacity: 0.7;
+    }
+    
+    .station-time {
+        font-size: 0.85rem;
+        color: var(--primary-color);
+    }
+    
+    .days-cell, .classes-cell {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+    
+    .day-badge, .class-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.15rem 0.5rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+    
+    .day-badge {
+        background-color: rgba(255, 166, 74, 0.15);
+        color: var(--accent-color);
+    }
+    
+    .class-badge {
+        background-color: rgba(74, 107, 255, 0.15);
+        color: var(--primary-color);
+    }
+    
+    .actions-cell {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+    }
+    
+    .p-4 {
+        padding: 2rem;
+    }
+    
+    @media (max-width: 768px) {
+        table {
+            font-size: 0.9rem;
+        }
+        
+        .actions-cell {
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        
+        .btn-sm {
+            display: block;
+            width: 100%;
+            text-align: center;
+        }
+    }
+</style>
+{% endblock %} 

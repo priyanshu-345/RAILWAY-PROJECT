@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Indian Railways{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', 'Roboto', sans-serif;
+        }
+        
+        .page-wrapper {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        main {
+            flex: 1;
+        }
+        
+        nav ul li a {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        nav ul li a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            transition: width 0.3s ease;
+        }
+
+        nav ul li a:hover::after {
+            width: 100%;
+        }
+        
+        nav ul li span {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            color: white;
+            font-weight: 500;
+            opacity: 0.9;
+            font-size: 0.85rem;
+        }
+
+        nav ul li:not(:last-child)::after {
+            content: '';
+            height: 12px;
+            width: 1px;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
+            display: inline-block;
+            margin: 0 -0.5rem 0 1rem;
+            vertical-align: middle;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            transition: transform 0.3s ease;
+        }
+
+        .logo a:hover {
+            transform: translateY(-2px);
+        }
+        
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #1a237e, #0d47a1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            box-shadow: 0 4px 15px rgba(26, 35, 126, 0.3);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #fff;
+        }
+        
+        .railway-logo {
+            width: 28px;
+            height: 28px;
+            color: white;
+            animation: train-move 3s ease-in-out infinite;
+        }
+
+        @keyframes train-move {
+            0% { transform: translateX(0); }
+            50% { transform: translateX(2px); }
+            100% { transform: translateX(0); }
+        }
+        
+        .smoke {
+            animation: smoke-rise 2s ease-out infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes smoke-rise {
+            0% { transform: translateY(0) scale(1); opacity: 0.7; }
+            100% { transform: translateY(-10px) scale(1.5); opacity: 0; }
+        }
+        
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+        }
+        
+        .logo-main {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: white;
+            letter-spacing: 0.5px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+        
+        .logo-tagline {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .logo a:hover .railway-logo {
+            animation: train-move 1.5s ease-in-out infinite;
+        }
+
+        @media (max-width: 768px) {
+            .logo-tagline {
+                display: none;
+            }
+            
+            .logo-main {
+                font-size: 1.1rem;
+            }
+            
+            .logo-icon {
+                width: 35px;
+                height: 35px;
+            }
+            
+            .railway-logo {
+                width: 20px;
+                height: 20px;
+            }
+        }
+
+        .alert {
+            animation: fadeIn 0.5s;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        footer {
+            margin-top: auto;
+            background: linear-gradient(to right, var(--primary-dark), var(--primary-color));
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 1.5rem 0;
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            position: relative;
+        }
+        
+        .footer-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 1px;
+            bottom: -2px;
+            left: 0;
+            background: white;
+            transition: width 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .footer-links a:hover::after {
+            width: 100%;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: -100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .btn:hover::after {
+            left: 100%;
+        }
+
+        table tr {
+            transition: background-color 0.3s ease;
+        }
+
+        table tr:hover {
+            background-color: rgba(123, 76, 255, 0.05);
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <div class="page-wrapper">
+        <header>
+            <div class="container">
+                <div class="header-content">
+                    <div class="logo">
+                        <a href="{{ url_for('index') }}">
+                            <div class="logo-icon">
+                                <svg viewBox="0 0 24 24" class="railway-logo">
+                                    <!-- Train Engine -->
+                                    <path d="M4 15h16v2H4z" fill="currentColor"/>
+                                    <path d="M4 12h16v2H4z" fill="currentColor"/>
+                                    <path d="M4 9h16v2H4z" fill="currentColor"/>
+                                    <!-- Train Windows -->
+                                    <circle cx="6" cy="10" r="1" fill="white"/>
+                                    <circle cx="10" cy="10" r="1" fill="white"/>
+                                    <circle cx="14" cy="10" r="1" fill="white"/>
+                                    <circle cx="18" cy="10" r="1" fill="white"/>
+                                    <!-- Train Front -->
+                                    <path d="M4 7l2-2h12l2 2z" fill="currentColor"/>
+                                    <!-- Train Wheels -->
+                                    <circle cx="6" cy="16" r="1.5" fill="currentColor"/>
+                                    <circle cx="12" cy="16" r="1.5" fill="currentColor"/>
+                                    <circle cx="18" cy="16" r="1.5" fill="currentColor"/>
+                                    <!-- Smoke -->
+                                    <path d="M4 5c0-1 1-2 2-2s2 1 2 2-1 2-2 2-2-1-2-2z" fill="currentColor" class="smoke"/>
+                                </svg>
+                            </div>
+                            <span class="logo-text">
+                                <span class="logo-main">Indian Railways</span>
+                                <span class="logo-tagline">Lifeline of the Nation</span>
+                            </span>
+                        </a>
+                    </div>
+                    <nav>
+                        <ul>
+                            <li><a href="{{ url_for('index') }}">Home</a></li>
+                            <li><a href="{{ url_for('search_trains') }}">Search Trains</a></li>
+                            <li><a href="{{ url_for('train_schedule') }}">Train Schedule</a></li>
+                            <li><a href="{{ url_for('ticket_booking') }}">Book Ticket</a></li>
+                            {% if session.username %}
+                            <li><a href="{{ url_for('my_bookings') }}">My Bookings</a></li>
+                            <li><a href="{{ url_for('transaction_history') }}">Transaction History</a></li>
+                            <li><span>Welcome, {{ session.username }}</span></li>
+                            <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                            {% else %}
+                            <li><a href="{{ url_for('login') }}">Login</a></li>
+                            <li><a href="{{ url_for('register') }}">Register</a></li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <div class="container">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    <span>{{ message }}</span>
+                </div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+
+        <footer>
+            <div class="container">
+                <div class="footer-content">
+                    <p>&copy; 2025 Indian Railways. All rights reserved.</p>
+                    <div class="footer-links">
+                        <a href="#">Privacy Policy</a>
+                        <a href="#">Terms of Service</a>
+                        <a href="#">Contact Us</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    {% block extra_js %}{% endblock %}
+
+    <!-- Advertisement Popup -->
+    <div class="ad-popup" id="adPopup">
+        <div class="ad-content">
+            <button class="ad-close" onclick="closeAd()">×</button>
+            <div class="ad-header">
+                <span class="ad-badge">Special Offer</span>
+                <h3>Book Your Next Journey!</h3>
+            </div>
+            <div class="ad-body">
+                <p>Get 20% off on your first booking!</p>
+                <p class="ad-code">Use code: <strong>FIRST20</strong></p>
+                <a href="{{ url_for('ticket_booking') }}" class="ad-cta">Book Now</a>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .ad-popup {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            transform: translateY(150%);
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            max-width: 320px;
+            border: 1px solid rgba(123, 76, 255, 0.1);
+        }
+
+        .ad-popup.show {
+            transform: translateY(0);
+        }
+
+        .ad-content {
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        .ad-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-color);
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.3s ease;
+        }
+
+        .ad-close:hover {
+            opacity: 1;
+        }
+
+        .ad-header {
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .ad-badge {
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 0.5rem;
+        }
+
+        .ad-header h3 {
+            color: var(--primary-color);
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .ad-body {
+            text-align: center;
+        }
+
+        .ad-body p {
+            margin: 0.5rem 0;
+            color: var(--text-color);
+        }
+
+        .ad-code {
+            background: rgba(123, 76, 255, 0.1);
+            padding: 0.5rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+        }
+
+        .ad-cta {
+            display: inline-block;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 1rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .ad-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(123, 76, 255, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .ad-popup {
+                left: 20px;
+                right: 20px;
+                max-width: none;
+            }
+        }
+    </style>
+
+    <script>
+        // Show ad popup after 5 seconds
+        setTimeout(() => {
+            document.getElementById('adPopup').classList.add('show');
+        }, 5000);
+
+        // Close ad popup
+        function closeAd() {
+            document.getElementById('adPopup').classList.remove('show');
+        }
+
+        // Hide ad popup when user clicks outside
+        document.addEventListener('click', (e) => {
+            const adPopup = document.getElementById('adPopup');
+            if (!adPopup.contains(e.target) && e.target !== adPopup) {
+                adPopup.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+
+</html>

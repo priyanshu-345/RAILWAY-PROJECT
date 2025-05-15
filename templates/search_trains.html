@@ -1,0 +1,589 @@
+{% extends "base.html" %}
+
+{% block title %}Search Trains - Indian Railways{% endblock %}
+
+{% block content %}
+<div class="text-center mb-4">
+    <h1 class="section-title">Search Trains</h1>
+    <p class="text-muted">Find trains between stations</p>
+</div>
+
+<!-- Today's date for form min date validation -->
+{% set today = now.strftime('%Y-%m-%d') %}
+
+<div class="card">
+    <form method="POST" action="{{ url_for('search_trains') }}">
+        <div class="form-row">
+            <div class="form-group col-md-5">
+                <label for="source">Source Station</label>
+                <select id="source" name="source" class="form-control" required>
+                    <option value="" {% if not source %}selected{% endif %}>Select Source Station</option>
+                    {% for station in stations %}
+                    <option value="{{ station.code }}" {% if source == station.code %}selected{% endif %}>
+                        {{ station.name }} ({{ station.code }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group col-md-2 text-center">
+                <div class="direction-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </div>
+            </div>
+            
+            <div class="form-group col-md-5">
+                <label for="destination">Destination Station</label>
+                <select id="destination" name="destination" class="form-control" required>
+                    <option value="" {% if not destination %}selected{% endif %}>Select Destination Station</option>
+                    {% for station in stations %}
+                    <option value="{{ station.code }}" {% if destination == station.code %}selected{% endif %}>
+                        {{ station.name }} ({{ station.code }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <button type="submit" class="btn">Search Trains</button>
+            <a href="{{ url_for('all_trains') }}" class="btn btn-secondary ml-2">View All Trains</a>
+        </div>
+    </form>
+</div>
+
+{% if trains %}
+<div class="search-results mt-4">
+    <h2 class="section-title">Search Results</h2>
+    <p class="text-center mb-4">Trains from <strong>{{ stations|selectattr('code', 'eq', source)|map(attribute='name')|first }}</strong> to <strong>{{ stations|selectattr('code', 'eq', destination)|map(attribute='name')|first }}</strong></p>
+    
+    <div class="row train-cards">
+        {% for train in trains %}
+        <div class="col-md-6 mb-4">
+            <div class="card train-card">
+                <div class="train-card-header">
+                    <div class="train-number">{{ train.number }}</div>
+                    <div class="train-name">{{ train.name }}</div>
+                </div>
+                
+                <div class="train-card-body">
+                    <div class="train-stations">
+                        <div class="train-station">
+                            <div class="station-marker src-marker"></div>
+                            <div class="station-details">
+                                <div class="station-code">{{ train.journey_source }}</div>
+                                <div class="station-name">{{ train.source_name }}</div>
+                                <div class="station-time">{{ train.stations|selectattr('code', 'eq', train.journey_source)|map(attribute='departure')|first }}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="journey-details">
+                            <div class="journey-line"></div>
+                            <div class="journey-info">
+                                <div class="journey-distance">{{ train.journey_distance }} km</div>
+                                {% if train.journey_time %}
+                                <div class="journey-time">{{ train.journey_time }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="train-station">
+                            <div class="station-marker dst-marker"></div>
+                            <div class="station-details">
+                                <div class="station-code">{{ train.journey_destination }}</div>
+                                <div class="station-name">{{ train.destination_name }}</div>
+                                <div class="station-time">{{ train.stations|selectattr('code', 'eq', train.journey_destination)|map(attribute='arrival')|first }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="train-info-row">
+                        <div class="train-info-item">
+                            <div class="info-label">Running Days</div>
+                            <div class="days-list">
+                                {% for day in train.days %}
+                                <span class="day-badge">{{ day }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="train-info-item">
+                            <div class="info-label">Classes</div>
+                            <div class="class-list">
+                                {% for class in train.classes %}
+                                <span class="class-badge">{{ class }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="train-card-footer">
+                    <a href="{{ url_for('train_schedule', train_number=train.number) }}" class="btn btn-sm btn-secondary">View Full Schedule</a>
+                    {% if session.username %}
+                    <button type="button" class="btn btn-sm book-now-btn" 
+                            onclick="openBookingModal('{{ train.number }}', 
+                                                     '{{ train.name }}', 
+                                                     '{{ train.journey_source }}', 
+                                                     '{{ train.source_name }}', 
+                                                     '{{ train.journey_destination }}', 
+                                                     '{{ train.destination_name }}',
+                                                     '{{ train.classes|join(',') }}')">
+                        Book Now
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Booking Modal -->
+<div id="bookingModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeBookingModal()">&times;</span>
+        <h2 class="modal-title">Direct Ticket Booking</h2>
+        <div id="trainDetails" class="train-summary"></div>
+        
+        <form id="directBookingForm" method="POST" action="{{ url_for('direct_book') }}">
+            <input type="hidden" name="train_number" id="modal_train_number">
+            <input type="hidden" name="from_station" id="modal_from_station">
+            <input type="hidden" name="to_station" id="modal_to_station">
+            
+            <div class="form-group">
+                <label for="travel_date">Travel Date</label>
+                <input type="date" id="travel_date" name="travel_date" class="form-control" required 
+                       min="{{ today }}" 
+                       value="{{ today }}">
+            </div>
+            
+            <div class="form-group">
+                <label for="train_class">Class</label>
+                <select id="train_class" name="train_class" class="form-control" required>
+                    <!-- Will be populated by JavaScript -->
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="seats">Number of Seats</label>
+                <input type="number" id="seats" name="seats" min="1" max="6" value="1" class="form-control" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="passenger_name">Passenger Name</label>
+                <input type="text" id="passenger_name" name="passenger_name" class="form-control" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="passenger_age">Passenger Age</label>
+                <input type="number" id="passenger_age" name="passenger_age" min="1" max="120" class="form-control" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="passenger_gender">Passenger Gender</label>
+                <select id="passenger_gender" name="passenger_gender" class="form-control" required>
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeBookingModal()">Cancel</button>
+                <button type="submit" class="btn">Book & Get PDF</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .form-row {
+        display: flex;
+        flex-wrap: wrap;
+        margin-right: -15px;
+        margin-left: -15px;
+    }
+    
+    .col-md-5 {
+        flex: 0 0 41.666667%;
+        max-width: 41.666667%;
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+    
+    .col-md-2 {
+        flex: 0 0 16.666667%;
+        max-width: 16.666667%;
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+    
+    .direction-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 32px;
+        color: var(--primary-color);
+    }
+    
+    .ml-2 {
+        margin-left: 0.5rem;
+    }
+    
+    .train-cards {
+        display: flex;
+        flex-wrap: wrap;
+        margin-right: -15px;
+        margin-left: -15px;
+    }
+    
+    .col-md-6 {
+        flex: 0 0 50%;
+        max-width: 50%;
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+    
+    .train-card {
+        height: 100%;
+        transition: var(--transition);
+        border: 1px solid rgba(230, 230, 230, 0.5);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .train-card:hover {
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        transform: translateY(-5px);
+    }
+    
+    .train-card-header {
+        padding: 1rem 1.5rem;
+        background: var(--gradient-primary);
+        color: white;
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    .train-number {
+        font-weight: bold;
+        font-size: 1.1rem;
+    }
+    
+    .train-name {
+        font-size: 1.1rem;
+    }
+    
+    .train-card-body {
+        padding: 1.5rem;
+        flex-grow: 1;
+    }
+    
+    .train-stations {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 1.5rem;
+    }
+    
+    .train-station {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 0.75rem;
+    }
+    
+    .station-marker {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-top: 5px;
+        margin-right: 10px;
+    }
+    
+    .src-marker {
+        background-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(74, 107, 255, 0.2);
+    }
+    
+    .dst-marker {
+        background-color: var(--secondary-color);
+        box-shadow: 0 0 0 3px rgba(94, 205, 174, 0.2);
+    }
+    
+    .station-details {
+        flex-grow: 1;
+    }
+    
+    .station-code {
+        font-weight: 500;
+        color: var(--text-color);
+        font-size: 0.9rem;
+    }
+    
+    .station-name {
+        font-weight: bold;
+        color: var(--text-color);
+        margin-bottom: 0.25rem;
+    }
+    
+    .station-time {
+        color: var(--primary-color);
+        font-weight: 500;
+    }
+    
+    .journey-details {
+        display: flex;
+        margin: 0.5rem 0 0.5rem 6px;
+        padding-left: 15px;
+    }
+    
+    .journey-line {
+        width: 2px;
+        background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color));
+        margin-right: 15px;
+        position: relative;
+        height: 40px;
+    }
+    
+    .journey-info {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    
+    .journey-distance, .journey-time {
+        font-size: 0.85rem;
+        color: var(--text-color);
+        opacity: 0.7;
+    }
+    
+    .train-info-row {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 1rem;
+    }
+    
+    .train-info-item {
+        flex: 0 0 48%;
+    }
+    
+    .info-label {
+        font-size: 0.85rem;
+        color: var(--text-color);
+        opacity: 0.7;
+        margin-bottom: 0.5rem;
+    }
+    
+    .days-list, .class-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+    
+    .day-badge, .class-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.15rem 0.5rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+    
+    .day-badge {
+        background-color: rgba(255, 166, 74, 0.15);
+        color: var(--accent-color);
+    }
+    
+    .class-badge {
+        background-color: rgba(74, 107, 255, 0.15);
+        color: var(--primary-color);
+    }
+    
+    .train-card-footer {
+        padding: 1rem 1.5rem;
+        background-color: rgba(0, 0, 0, 0.02);
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+    }
+    
+    .d-inline {
+        display: inline-block;
+    }
+    
+    /* Modal Styles */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6);
+        overflow: auto;
+        backdrop-filter: blur(3px);
+    }
+    
+    .modal-content {
+        background-color: white;
+        margin: 5% auto;
+        padding: 2rem;
+        width: 90%;
+        max-width: 600px;
+        border-radius: 16px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        animation: modalFadeIn 0.3s ease;
+        position: relative;
+    }
+    
+    @keyframes modalFadeIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .close-btn {
+        position: absolute;
+        top: 1.5rem;
+        right: 1.5rem;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--text-color);
+        cursor: pointer;
+        transition: var(--transition);
+    }
+    
+    .close-btn:hover {
+        color: var(--primary-color);
+    }
+    
+    .modal-title {
+        color: var(--primary-color);
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .train-summary {
+        background: rgba(123, 76, 255, 0.05);
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        font-weight: 500;
+    }
+    
+    .form-group {
+        margin-bottom: 1.25rem;
+    }
+    
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+    
+    .book-now-btn {
+        background: linear-gradient(135deg, var(--secondary-color), var(--secondary-light));
+        box-shadow: 0 3px 8px rgba(0, 216, 194, 0.2);
+    }
+    
+    .book-now-btn:hover {
+        background: linear-gradient(135deg, var(--secondary-dark), var(--secondary-color));
+        box-shadow: 0 5px 15px rgba(0, 216, 194,.3);
+    }
+    
+    @media (max-width: 768px) {
+        .form-row {
+            flex-direction: column;
+        }
+        
+        .col-md-5, .col-md-2 {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+        
+        .direction-icon {
+            margin: 1rem 0;
+            transform: rotate(90deg);
+        }
+        
+        .col-md-6 {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+        
+        .modal-content {
+            width: 95%;
+            margin: 5% auto;
+            padding: 1.5rem;
+        }
+    }
+</style>
+
+<script>
+    // Get today's date for the date input min value
+    const today = new Date().toISOString().split('T')[0];
+    document.addEventListener('DOMContentLoaded', function() {
+        const dateInputs = document.querySelectorAll('input[type="date"]');
+        dateInputs.forEach(input => {
+            input.min = today;
+            input.value = today;
+        });
+    });
+    
+    // Modal functions
+    function openBookingModal(trainNumber, trainName, fromStation, fromStationName, 
+                             toStation, toStationName, trainClasses) {
+        document.getElementById('modal_train_number').value = trainNumber;
+        document.getElementById('modal_from_station').value = fromStation;
+        document.getElementById('modal_to_station').value = toStation;
+        
+        // Display train summary
+        const trainSummary = document.getElementById('trainDetails');
+        trainSummary.innerHTML = `
+            <strong>${trainName} (${trainNumber})</strong><br>
+            ${fromStationName} (${fromStation}) to ${toStationName} (${toStation})
+        `;
+        
+        // Populate class dropdown
+        const classSelect = document.getElementById('train_class');
+        classSelect.innerHTML = '<option value="">Select Class</option>';
+        
+        const classes = trainClasses.split(',');
+        classes.forEach(cls => {
+            const option = document.createElement('option');
+            option.value = cls;
+            option.textContent = cls;
+            classSelect.appendChild(option);
+        });
+        
+        // Show the modal
+        document.getElementById('bookingModal').style.display = 'block';
+    }
+    
+    function closeBookingModal() {
+        document.getElementById('bookingModal').style.display = 'none';
+    }
+    
+    // Close the modal when clicking outside of it
+    window.onclick = function(event) {
+        const modal = document.getElementById('bookingModal');
+        if (event.target == modal) {
+            closeBookingModal();
+        }
+    }
+</script>
+{% endblock %} 

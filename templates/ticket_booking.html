@@ -1,0 +1,332 @@
+{% extends "base.html" %}
+
+{% block title %}Book Ticket - Indian Railways{% endblock %}
+
+{% block content %}
+<div class="text-center">
+    <h1 class="section-title">Book Train Ticket</h1>
+    <p class="mb-4">Fill in details to book your ticket and get PDF</p>
+</div>
+
+<div class="card">
+    <form method="POST" action="{{ url_for('direct_book') }}">
+        <div class="form-section">
+            <h3 class="section-subtitle">Journey Details</h3>
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="from_station">From Station</label>
+                <input type="text" id="from_station" name="from_station" required
+                    placeholder="Enter station name or code" class="form-control"
+                    value="{{ request.args.get('from_station', '') }}">
+            </div>
+
+            <div class="form-group">
+                <label for="to_station">To Station</label>
+                <input type="text" id="to_station" name="to_station" required placeholder="Enter station name or code"
+                    class="form-control" value="{{ request.args.get('to_station', '') }}">
+            </div>
+
+            <div class="form-group">
+                <label for="train_number">Train Number</label>
+                <input type="text" id="train_number" name="train_number" required placeholder="Enter train number"
+                    class="form-control" value="{{ request.args.get('train_number', '') }}">
+            </div>
+
+            <div class="form-group">
+                    <label for="travel_date">Journey Date</label>
+                    <input type="date" id="travel_date" name="travel_date" required class="form-control" 
+                           min="{{ today }}" max="{{ max_date }}" value="{{ today }}">
+                </div>
+                
+                <div class="form-group">
+                    <label for="train_class">Class</label>
+                    <select id="train_class" name="train_class" required class="form-control">
+                        <option value="">Select class</option>
+                        <option value="1A">1A - AC First Class</option>
+                        <option value="2A">2A - AC 2 Tier</option>
+                        <option value="3A">3A - AC 3 Tier</option>
+                        <option value="SL">SL - Sleeper</option>
+                        <option value="CC">CC - Chair Car</option>
+                        <option value="EC">EC - Executive Chair Car</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="seats">Number of Seats</label>
+                    <input type="number" id="seats" name="seats" min="1" max="6" value="1" 
+                           class="form-control" required>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3 class="section-subtitle">Passenger Details</h3>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="passenger_name">Passenger Name</label>
+                    <input type="text" id="passenger_name" name="passenger_name" required class="form-control"
+                        placeholder="Enter passenger name">
+                </div>
+
+                <div class="form-group">
+                    <label for="passenger_age">Age</label>
+                    <input type="number" id="passenger_age" name="passenger_age" required class="form-control" min="1"
+                        max="120" placeholder="Enter age">
+                </div>
+
+                <div class="form-group">
+                    <label for="passenger_gender">Gender</label>
+                    <select id="passenger_gender" name="passenger_gender" required class="form-control">
+                        <option value="">Select gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3 class="section-subtitle">Payment Details</h3>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="payment_method">Payment Method</label>
+                    <select id="payment_method" name="payment_method" required class="form-control" onchange="showPaymentFields()">
+                        <option value="">Select payment method</option>
+                        <option value="credit_card">Credit Card</option>
+                        <option value="debit_card">Debit Card</option>
+                        <option value="upi">UPI</option>
+                        <option value="net_banking">Net Banking</option>
+                    </select>
+                </div>
+                
+                <div class="form-group payment-field card-field" style="display: none;">
+                    <label for="card_number">Card Number</label>
+                    <input type="text" id="card_number" name="card_number" class="form-control" 
+                           placeholder="XXXX XXXX XXXX XXXX" maxlength="19">
+                </div>
+                
+                <div class="form-group payment-field card-field" style="display: none;">
+                    <label for="card_name">Name on Card</label>
+                    <input type="text" id="card_name" name="card_name" class="form-control" 
+                           placeholder="Enter name as on card">
+                </div>
+                
+                <div class="form-group payment-field card-field" style="display: none;">
+                    <label for="card_expiry">Expiry Date</label>
+                    <input type="text" id="card_expiry" name="card_expiry" class="form-control" 
+                           placeholder="MM/YY" maxlength="5">
+                </div>
+                
+                <div class="form-group payment-field card-field" style="display: none;">
+                    <label for="card_cvv">CVV</label>
+                    <input type="password" id="card_cvv" name="card_cvv" class="form-control" 
+                           placeholder="XXX" maxlength="3">
+                </div>
+                
+                <div class="form-group payment-field upi-field" style="display: none;">
+                    <label for="upi_id">UPI ID</label>
+                    <input type="text" id="upi_id" name="upi_id" class="form-control" 
+                           placeholder="username@upi">
+                </div>
+                
+                <div class="form-group payment-field netbanking-field" style="display: none;">
+                    <label for="bank_name">Bank Name</label>
+                    <select id="bank_name" name="bank_name" class="form-control">
+                        <option value="">Select Bank</option>
+                        <option value="sbi">State Bank of India</option>
+                        <option value="hdfc">HDFC Bank</option>
+                        <option value="icici">ICICI Bank</option>
+                        <option value="axis">Axis Bank</option>
+                        <option value="pnb">Punjab National Bank</option>
+                        <option value="bob">Bank of Baroda</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="payment-summary">
+                <div class="fare-details">
+                    <div class="fare-row">
+                        <span>Base Fare:</span>
+                        <span>₹ <span id="base-fare">800</span></span>
+                    </div>
+                    <div class="fare-row">
+                        <span>Reservation Charges:</span>
+                        <span>₹ <span id="reservation-charges">40</span></span>
+                    </div>
+                    <div class="fare-row">
+                        <span>GST (5%):</span>
+                        <span>₹ <span id="gst">42</span></span>
+                    </div>
+                    <div class="fare-row total">
+                        <span>Total Amount:</span>
+                        <span>₹ <span id="total-amount">882</span></span>
+                    </div>
+                    <input type="hidden" id="fare_amount" name="fare_amount" value="882">
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-block">Pay & Book Ticket</button>
+    </form>
+</div>
+
+<div class="card mt-4">
+    <h3 class="card-title">Important Information</h3>
+    <ul class="info-list">
+        <li>Please enter correct station names or codes</li>
+        <li>Train number can be found from the search trains section</li>
+        <li>Booking is available up to 120 days in advance</li>
+        <li>Check train schedule before booking for arrival/departure times</li>
+        <li>Keep your ID proof ready while traveling</li>
+    </ul>
+</div>
+
+<style>
+    .form-section {
+        margin-bottom: 2rem;
+    }
+    
+    .section-subtitle {
+        font-size: 1.25rem;
+        color: var(--primary-color);
+        margin: 0 0 1rem;
+    }
+    
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .info-list {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .info-list li {
+        position: relative;
+        padding-left: 1.5rem;
+        margin-bottom: 0.75rem;
+        color: var(--text-color);
+    }
+
+    .info-list li::before {
+        content: "•";
+        position: absolute;
+        left: 0;
+        color: var(--primary-color);
+        font-weight: bold;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        font-size: 1rem;
+        margin-top: 0.25rem;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+    }
+
+    .payment-summary {
+        margin-top: 1.5rem;
+        background-color: var(--light-color);
+        border-radius: 8px;
+        padding: 1.5rem;
+    }
+    
+    .fare-details {
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+    
+    .fare-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .fare-row.total {
+        font-weight: bold;
+        font-size: 1.1rem;
+        padding-top: 1rem;
+        color: var(--primary-color);
+        border-bottom: none;
+    }
+
+    @media (max-width: 768px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<script>
+    function showPaymentFields() {
+        // Hide all payment fields first
+        const paymentFields = document.querySelectorAll('.payment-field');
+        paymentFields.forEach(field => {
+            field.style.display = 'none';
+        });
+        
+        // Show relevant fields based on selected payment method
+        const paymentMethod = document.getElementById('payment_method').value;
+        
+        if (paymentMethod === 'credit_card' || paymentMethod === 'debit_card') {
+            const cardFields = document.querySelectorAll('.card-field');
+            cardFields.forEach(field => {
+                field.style.display = 'block';
+            });
+        } else if (paymentMethod === 'upi') {
+            document.querySelector('.upi-field').style.display = 'block';
+        } else if (paymentMethod === 'net_banking') {
+            document.querySelector('.netbanking-field').style.display = 'block';
+        }
+    }
+    
+    // Handle card number formatting with spaces
+    document.getElementById('card_number').addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\s+/g, '');
+        // Add a space after every 4 digits
+        value = value.replace(/(\d{4})/g, '$1 ').trim();
+        e.target.value = value;
+    });
+    
+    // Handle expiry date formatting (MM/YY)
+    document.getElementById('card_expiry').addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        
+        if (value.length > 2) {
+            value = value.substring(0, 2) + '/' + value.substring(2, 4);
+        }
+        
+        e.target.value = value;
+    });
+    
+    // Update fare based on number of seats
+    document.getElementById('seats').addEventListener('change', function(e) {
+        const seats = parseInt(e.target.value) || 1;
+        const basePerSeat = 800;
+        const reservationPerSeat = 40;
+        
+        const baseFare = basePerSeat * seats;
+        const reservationCharge = reservationPerSeat * seats;
+        const gst = Math.round((baseFare + reservationCharge) * 0.05);
+        const total = baseFare + reservationCharge + gst;
+        
+        document.getElementById('base-fare').textContent = baseFare;
+        document.getElementById('reservation-charges').textContent = reservationCharge;
+        document.getElementById('gst').textContent = gst;
+        document.getElementById('total-amount').textContent = total;
+        document.getElementById('fare_amount').value = total;
+    });
+</script>
+{% endblock %}

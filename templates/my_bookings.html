@@ -1,0 +1,293 @@
+{% extends "base.html" %}
+
+{% block title %}My Bookings - Indian Railways{% endblock %}
+
+{% block extra_css %}
+<style>
+    .my-bookings-container {
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+    
+    .page-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+    
+    .page-header h1 {
+        color: var(--primary-color);
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .page-header p {
+        color: var(--text-color);
+        opacity: 0.8;
+    }
+    
+    .bookings-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .booking-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 5px 20px rgba(123, 76, 255, 0.08);
+        overflow: hidden;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    
+    .booking-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(123, 76, 255, 0.12);
+    }
+    
+    .booking-header {
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+        color: white;
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .booking-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+    }
+    
+    .booking-date {
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+    
+    .booking-body {
+        padding: 1.5rem;
+    }
+    
+    .journey-route {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .station-card {
+        background: rgba(123, 76, 255, 0.05);
+        border-radius: 8px;
+        padding: 0.8rem 1.2rem;
+        min-width: 120px;
+        text-align: center;
+    }
+    
+    .station-code {
+        font-weight: 700;
+        color: var(--primary-color);
+        font-size: 1.2rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .station-name {
+        font-size: 0.85rem;
+        color: var(--text-color);
+        opacity: 0.8;
+    }
+    
+    .journey-connection {
+        flex-grow: 1;
+        height: 2px;
+        background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+        margin: 0 1rem;
+        position: relative;
+    }
+    
+    .journey-connection::before,
+    .journey-connection::after {
+        content: '';
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+    
+    .journey-connection::before {
+        left: 0;
+        background-color: var(--primary-color);
+    }
+    
+    .journey-connection::after {
+        right: 0;
+        background-color: var(--secondary-color);
+    }
+    
+    .booking-details {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .detail-item {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .detail-label {
+        font-size: 0.85rem;
+        color: var(--text-color);
+        opacity: 0.7;
+        margin-bottom: 0.3rem;
+    }
+    
+    .detail-value {
+        font-weight: 600;
+        color: var(--text-color);
+    }
+    
+    .pnr-badge {
+        background: var(--primary-color);
+        color: white;
+        font-size: 0.85rem;
+        font-weight: 600;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        margin-left: 0.5rem;
+    }
+    
+    .booking-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 1rem;
+        gap: 1rem;
+    }
+    
+    .booking-btn {
+        padding: 0.7rem 1.2rem;
+        border-radius: 8px;
+        font-weight: 500;
+        font-size: 0.9rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .view-btn {
+        background-color: white;
+        color: var(--primary-color);
+        border: 1px solid var(--primary-color);
+    }
+    
+    .view-btn:hover {
+        background-color: rgba(123, 76, 255, 0.05);
+    }
+    
+    .download-btn {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        box-shadow: 0 4px 10px rgba(123, 76, 255, 0.2);
+    }
+    
+    .download-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(123, 76, 255, 0.3);
+    }
+    
+    .no-bookings {
+        background: white;
+        border-radius: 16px;
+        padding: 3rem 2rem;
+        text-align: center;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    }
+    
+    .no-bookings-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: var(--primary-color);
+        opacity: 0.6;
+    }
+    
+    .no-bookings-message {
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
+        color: var(--primary-color);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="my-bookings-container">
+    <div class="page-header">
+        <h1>My Bookings</h1>
+        <p>View and manage all your train tickets</p>
+    </div>
+    
+    {% if bookings and bookings|length > 0 %}
+    <div class="bookings-grid">
+        {% for booking in bookings %}
+        <div class="booking-card">
+            <div class="booking-header">
+                <div class="booking-title">
+                    {{ booking.train_name }} ({{ booking.train_number }})
+                    <span class="pnr-badge">PNR: {{ booking.pnr }}</span>
+                </div>
+                <div class="booking-date">{{ booking.date }}</div>
+            </div>
+            
+            <div class="booking-body">
+                <div class="journey-route">
+                    <div class="station-card">
+                        <div class="station-code">{{ booking.from_station }}</div>
+                        <div class="station-name">{{ booking.from_station_name }}</div>
+                    </div>
+                    
+                    <div class="journey-connection"></div>
+                    
+                    <div class="station-card">
+                        <div class="station-code">{{ booking.to_station }}</div>
+                        <div class="station-name">{{ booking.to_station_name }}</div>
+                    </div>
+                </div>
+                
+                <div class="booking-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Class</div>
+                        <div class="detail-value">{{ booking.class }}</div>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <div class="detail-label">Passenger</div>
+                        <div class="detail-value">{{ booking.passenger_name }}</div>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <div class="detail-label">Seats</div>
+                        <div class="detail-value">{{ booking.seats }}</div>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <div class="detail-label">Booked On</div>
+                        <div class="detail-value">{{ booking.booking_date }}</div>
+                    </div>
+                </div>
+                
+                <div class="booking-actions">
+                    <a href="{{ url_for('view_ticket', pnr=booking.pnr) }}" class="booking-btn view-btn">View Ticket</a>
+                    <a href="{{ url_for('download_ticket', pnr=booking.pnr) }}" class="booking-btn download-btn">Download PDF</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="no-bookings">
+        <div class="no-bookings-icon">🎫</div>
+        <div class="no-bookings-message">You don't have any bookings yet</div>
+        <a href="{{ url_for('ticket_booking') }}" class="btn">Book Your First Ticket</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 
